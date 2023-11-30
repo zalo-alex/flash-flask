@@ -14,7 +14,7 @@ class Mapper:
         loader = importlib.machinery.SourceFileLoader('route', path)
         route = loader.load_module()
 
-        url_path = path[:-3].replace("\\", "/").split("/")[1:]
+        url_path = path[:-3].replace("\\", "/").replace("[", "<").replace("]", ">").split("/")[1:]
         
         if url_path[-1] == "__index__":
             url_path = url_path[:-1]
