@@ -15,6 +15,9 @@ class Mapper:
         route = loader.load_module()
 
         url_path = path[:-3].replace("\\", "/").split("/")[1:]
+        
+        if url_path[-1] == "__index__":
+            url_path = url_path[:-1]
 
         try:
             self.app.flask.add_url_rule('/' + '/'.join(url_path), "_".join(url_path), route.endpoint, **route.endpoint.options)
