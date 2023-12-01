@@ -20,8 +20,9 @@ class Mapper:
             url_path = url_path[:-1]
 
         try:
-            self.app.flask.add_url_rule('/' + '/'.join(url_path), "_".join(url_path), route.endpoint, **route.endpoint.options)
-            print(f" + NEW ROUTE: {'/' + '/'.join(url_path)} ({route.endpoint.options})")
+            route_path = '/' + '/'.join(url_path)
+            self.app.flask.add_url_rule(route_path, "_".join(url_path), route.endpoint, **route.endpoint.options)
+            print(f" + NEW ROUTE: {route_path} ({route.endpoint.options})")
         except Exception as e:
             print(e)
 
