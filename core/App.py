@@ -16,5 +16,4 @@ class App:
     def run(self, *args, **kwargs):
         self.map_routes()
 
-        #self.flask.add_url_rule("/", "index", self.flash_route)
         self.flask.run(*args, **kwargs)
