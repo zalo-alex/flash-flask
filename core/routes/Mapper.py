@@ -6,6 +6,7 @@ class Mapper:
     def __init__(self, app, path) -> None:
         self.app = app
         self.path = path
+        self.routes = []
 
     def init_routes(self):
         self.list_dir(self.path)
@@ -14,13 +15,14 @@ class Mapper:
         loader = importlib.machinery.SourceFileLoader('route', path)
         route = loader.load_module()
 
-        url_path = path[:-3].replace("\\", "/").replace("[", "<").replace("]", ">").split("/")[1:]
+        url_path = path[:-3].replace("\\", "/").replace("[", "<").replace("]", ">").split("/")[1:-1]
         
         if url_path[-1] == "__index__":
             url_path = url_path[:-1]
 
         try:
             route_path = '/' + '/'.join(url_path)
+            self.routes.append(route_path)
             self.app.flask.add_url_rule(route_path, "_".join(url_path), route.endpoint, **route.endpoint.options)
             print(f" + NEW ROUTE: {route_path} ({route.endpoint.options})")
         except Exception as e:

@@ -8,10 +8,13 @@ class App:
         self.flask = Flask(import_name, *args, **kwargs)
         self.verbose = verbose
         self.routes_folder = routes_folder
+        
+    def set_site_map(self, path):
+        self.flask.add_url_rule(path, "_site_map", lambda *_: "<br>".join([f"<a href={route.replace('<', '[').replace('>', ']')}>{route.replace('<', '[').replace('>', ']')}</a>" for route in self.mapper.routes]))
 
     def map_routes(self):
-        mapper = Mapper(self, self.routes_folder)
-        mapper.init_routes()
+        self.mapper = Mapper(self, self.routes_folder)
+        self.mapper.init_routes()
 
     def run(self, *args, **kwargs):
         self.map_routes()
