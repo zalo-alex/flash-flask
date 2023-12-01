@@ -32,9 +32,7 @@ from flash_flask import route
 def endpoint():
 	return "Hello World from Flash Flask !"
 ```
-`__index__` indicates the path base,
-`@route()` indicates a route
-all route functions must be called `endpoint`.
+`__index__` indicates the path base, `@route()` indicates a route, all route functions must be called `endpoint`.
 
 ### More routes
 ```
