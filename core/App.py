@@ -1,4 +1,6 @@
-from flask import Flask
+import os
+
+from flask import Flask, send_from_directory
 
 from flash_flask.core.routes.Mapper import Mapper
 
@@ -15,8 +17,22 @@ class App:
     def map_routes(self):
         self.mapper = Mapper(self, self.routes_folder)
         self.mapper.init_routes()
+        
+    def rstatic(self, filename):
+        static_folder = 'routes'
+
+        path = os.path.join(static_folder, filename)
+        if not os.path.isfile(path):
+            return "File not found", 404
+        
+        if any([path.endswith(ext) for ext in [".css", ".js"]]):
+            return send_from_directory(static_folder, filename)
+        
+        return "File not found", 404
 
     def run(self, *args, **kwargs):
         self.map_routes()
+        
+        self.flask.add_url_rule("/rstatic/<path:filename>", view_func=self.rstatic)
 
         self.flask.run(*args, **kwargs)

@@ -2,6 +2,9 @@ import os
 import importlib.machinery
 
 class Mapper:
+    
+    def get_route_split_path(path):
+        return path.replace("\\", "/").replace("[", "<").replace("]", ">").split("/")[1:-1]
 
     def __init__(self, app, path) -> None:
         self.app = app
@@ -15,15 +18,15 @@ class Mapper:
         loader = importlib.machinery.SourceFileLoader('route', path)
         route = loader.load_module()
 
-        url_path = path[:-3].replace("\\", "/").replace("[", "<").replace("]", ">").split("/")[1:-1]
+        split_path = Mapper.get_route_split_path(path)
         
-        if url_path[-1] == "__index__":
-            url_path = url_path[:-1]
+        if split_path[-1] == "__index__":
+            split_path = split_path[:-1]
 
         try:
-            route_path = '/' + '/'.join(url_path)
+            route_path = '/' + '/'.join(split_path)
             self.routes.append(route_path)
-            self.app.flask.add_url_rule(route_path, "_".join(url_path), route.endpoint, **route.endpoint.options)
+            self.app.flask.add_url_rule(route_path, "_".join(split_path), route.endpoint, **route.endpoint.options)
             print(f" + NEW ROUTE: {route_path} ({route.endpoint.options})")
         except Exception as e:
             print(e)
