@@ -1,4 +1,5 @@
 import os
+import secrets
 
 from flask import Flask, send_from_directory
 
@@ -6,8 +7,9 @@ from flash_flask.core.routes.Mapper import Mapper
 
 class App:
 
-    def __init__(self, import_name, verbose = False, routes_folder = "routes", extra_files = [], *args, **kwargs) -> None:
+    def __init__(self, import_name, verbose = False, routes_folder = "routes", extra_files = [], secret_key = secrets.token_urlsafe(16), *args, **kwargs) -> None:
         self.flask = Flask(import_name, *args, **kwargs)
+        self.flask.secret_key = secret_key
         self.verbose = verbose
         self.routes_folder = routes_folder
         self.extra_files = extra_files
@@ -35,5 +37,5 @@ class App:
         self.map_routes()
         
         self.flask.add_url_rule("/rstatic/<path:filename>", view_func=self.rstatic)
-        
+
         self.flask.run(extra_files=self.extra_files, *args, **kwargs)
