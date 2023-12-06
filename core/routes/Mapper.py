@@ -24,6 +24,7 @@ class Mapper:
             split_path = split_path[:-1]
 
         try:
+            self.app.extra_files.append(path)
             route_path = '/' + '/'.join(split_path)
             self.routes.append(route_path)
             self.app.flask.add_url_rule(route_path, "_".join(split_path), route.endpoint, **route.endpoint.options)

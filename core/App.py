@@ -6,10 +6,11 @@ from flash_flask.core.routes.Mapper import Mapper
 
 class App:
 
-    def __init__(self, import_name, verbose = False, routes_folder = "routes", *args, **kwargs) -> None:
+    def __init__(self, import_name, verbose = False, routes_folder = "routes", extra_files = [], *args, **kwargs) -> None:
         self.flask = Flask(import_name, *args, **kwargs)
         self.verbose = verbose
         self.routes_folder = routes_folder
+        self.extra_files = extra_files
         
     def set_site_map(self, path):
         self.flask.add_url_rule(path, "_site_map", lambda *_: "<br>".join([f"<a href={route.replace('<', '[').replace('>', ']')}>{route.replace('<', '[').replace('>', ']')}</a>" for route in self.mapper.routes]))
@@ -34,5 +35,5 @@ class App:
         self.map_routes()
         
         self.flask.add_url_rule("/rstatic/<path:filename>", view_func=self.rstatic)
-
-        self.flask.run(*args, **kwargs)
+        
+        self.flask.run(extra_files=self.extra_files, *args, **kwargs)
