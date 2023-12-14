@@ -4,6 +4,7 @@ import threading
 class MySQL:
     
     LOCK = threading.Lock()
+    TABLES = {}
     
     def init(host, port, user, password, database):
         MySQL.conn = mysql.connector.connect(
@@ -13,6 +14,20 @@ class MySQL:
             password=password,
             database=database
         )
+        MySQL.init_tables()
+        
+    def init_tables():
+        for table in MySQL.fetch_all("SHOW TABLES"):
+            MySQL.init_table(table[0])
+    
+    def init_table(table):
+        MySQL.TABLES[table] = {}
+        columns = MySQL.fetch_all("DESCRIBE %s;", (table,))
+        for i, colmun in enumerate(columns):
+            MySQL.TABLES[table][colmun[0]] = i
+
+    def get_row_col(row, table, column):
+        return row[MySQL.TABLES[table][column]]
 
     def commit():
         MySQL.conn.commit()
