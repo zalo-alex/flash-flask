@@ -5,9 +5,10 @@ class MySQL:
     
     LOCK = threading.Lock()
     
-    def init(host, user, password, database):
+    def init(host, port, user, password, database):
         MySQL.conn = mysql.connector.connect(
             host=host,
+            port=port,
             user=user,
             password=password,
             database=database
