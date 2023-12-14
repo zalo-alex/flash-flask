@@ -14,12 +14,13 @@ class Utils:
             raise Exception("Invalid request data")
         return values
     
-    def get_optional_json_values(array: list):
-        values = [value for value in map(lambda key: request.json.get(key), array)]
-        not_none = []
-        [not_none.append(value) if value != None else None for value in values]                
+    def get_optional_json_values(array: list, min_amount = 1):
+        values = {}
+        for key in array:
+            if data := request.json.get(key):
+                values[key] = data    
         
-        if not not_none:
+        if len(values) < min_amount:
             raise Exception("Invalid request data")
 
-        return not_none
+        return values
