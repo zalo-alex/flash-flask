@@ -22,7 +22,7 @@ class MySQL:
     
     def init_table(table):
         MySQL.TABLES[table] = {}
-        columns = MySQL.fetch_all("DESCRIBE %s;", (table,))
+        columns = MySQL.fetch_all(f"DESCRIBE {table};")
         for i, colmun in enumerate(columns):
             MySQL.TABLES[table][colmun[0]] = i
 
