@@ -37,17 +37,21 @@ class MySQL:
         return MySQL.conn.cursor()
         
     def fetch_one(query, args = ()):
+        MySQL.LOCK.acquire()
         cursor = MySQL.cursor()
         cursor.execute(query, args)
         data = cursor.fetchone()
         cursor.close()
+        MySQL.LOCK.release()
         return data
 
     def fetch_all(query, args = ()):
+        MySQL.LOCK.acquire()
         cursor = MySQL.cursor()
         cursor.execute(query, args)
         data = cursor.fetchall()
         cursor.close()
+        MySQL.LOCK.release()
         return data
     
     def insert_into(table, columns, values):
