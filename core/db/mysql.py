@@ -22,13 +22,15 @@ class MySQL:
         
     def fetch_one(query, args = ()):
         cursor = MySQL.cursor()
-        data = cursor.execute(query, args).fetchone()
+        cursor.execute(query, args)
+        data = cursor.fetchone()
         cursor.close()
         return data
 
     def fetch_all(query, args = ()):
         cursor = MySQL.cursor()
-        data = cursor.execute(query, args).fetchall()
+        cursor.execute(query, args)
+        data = cursor.fetchall()
         cursor.close()
         return data
     
