@@ -17,7 +17,7 @@ class Utils:
     def get_optional_json_values(array: list, min_amount = 1):
         values = {}
         for key in array:
-            if data := request.json.get(key):
+            if (data := request.json.get(key)) != None:
                 values[key] = data    
         
         if len(values) < min_amount:
