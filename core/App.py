@@ -15,6 +15,9 @@ class App:
         self.routes_folder = routes_folder
         self.extra_files = extra_files
         
+        self.map_routes()
+        self.flask.add_url_rule("/rstatic/<path:filename>", view_func=self.rstatic)
+        
     def set_site_map(self, path):
         self.flask.add_url_rule(path, "_site_map", lambda *_: "<br>".join([f"<a href={route.replace('<', '[').replace('>', ']')}>{route.replace('<', '[').replace('>', ']')}</a>" for route in self.mapper.routes]))
 
@@ -35,10 +38,6 @@ class App:
         return "File not found", 404
 
     def run(self, *args, **kwargs):
-        self.map_routes()
-        
-        self.flask.add_url_rule("/rstatic/<path:filename>", view_func=self.rstatic)
-
         self.flask.run(extra_files=self.extra_files, *args, **kwargs)
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
