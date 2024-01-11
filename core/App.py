@@ -1,5 +1,6 @@
 import os
 import secrets
+from typing import Any
 
 from flask import Flask, send_from_directory
 
@@ -39,3 +40,6 @@ class App:
         self.flask.add_url_rule("/rstatic/<path:filename>", view_func=self.rstatic)
 
         self.flask.run(extra_files=self.extra_files, *args, **kwargs)
+
+    def __call__(self, *args: Any, **kwds: Any) -> Any:
+        return self.flask.wsgi_app(*args, **kwds)
