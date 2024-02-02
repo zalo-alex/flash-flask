@@ -57,8 +57,8 @@ class MySQL:
     def insert_into(table, columns, values):
         MySQL.LOCK.acquire()
         cursor = MySQL.cursor()
-        print(f"INSERT INTO {table} ({', '.join(columns)}) VALUES {values}")
-        cursor.execute(f"INSERT INTO {table} ({', '.join(columns)}) VALUES {values}")
+        print(f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({', '.join('%s' for _ in range(len(values)))})")
+        cursor.execute(f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({', '.join('%s' for _ in range(len(values)))})", values)
         MySQL.commit()
         row_id = cursor.lastrowid
         cursor.close()
