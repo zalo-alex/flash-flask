@@ -14,27 +14,12 @@ class MySQL:
             password=password,
             database=database
         )
-        MySQL.init_tables()
-        
-    def init_tables():
-        for table in MySQL.fetch_all("SHOW TABLES"):
-            MySQL.init_table(table[0])
-    
-    def init_table(table):
-        MySQL.TABLES[table] = {}
-        columns = MySQL.fetch_all(f"DESCRIBE {table};")
-        for i, colmun in enumerate(columns):
-            MySQL.TABLES[table][colmun[0]] = i
-
-    def get_row_col(row, table, column):
-        return row[MySQL.TABLES[table][column]]
 
     def commit():
         MySQL.conn.commit()
     
     def cursor():
-        MySQL.conn.cursor()
-        return MySQL.conn.cursor()
+        return MySQL.conn.cursor(dictionary=True)
         
     def fetch_one(query, args = ()):
         MySQL.LOCK.acquire()
