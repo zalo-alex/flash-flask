@@ -1,3 +1,6 @@
+> [!WARNING]  
+> This module is no longer maintained !
+
 # Flash Flask
 > A more organized way of using flask
 
