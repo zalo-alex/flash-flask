@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='flash_flask_python',
-    version='1.0.4',
+    version='1.0.5',
     description='Make Flask Better',
     author='Alex ZALO',
     install_requires=[

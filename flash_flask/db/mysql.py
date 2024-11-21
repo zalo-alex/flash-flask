@@ -14,6 +14,7 @@ class MySQL:
             password=password,
             database=database
         )
+        MySQL.conn.ping(reconnect=True)
 
     def commit():
         MySQL.conn.commit()
