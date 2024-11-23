@@ -2,69 +2,98 @@ import mysql.connector
 import threading
 
 class MySQL:
-    
     LOCK = threading.Lock()
     TABLES = {}
-    
+    conn = None
+
+    @staticmethod
     def init(host, port, user, password, database):
+        MySQL.host = host
+        MySQL.port = port
+        MySQL.user = user
+        MySQL.password = password
+        MySQL.database = database
+        MySQL._connect()
+
+    @staticmethod
+    def _connect():
+        """Establish a connection to the database."""
         MySQL.conn = mysql.connector.connect(
-            host=host,
-            port=port,
-            user=user,
-            password=password,
-            database=database
+            host=MySQL.host,
+            port=MySQL.port,
+            user=MySQL.user,
+            password=MySQL.password,
+            database=MySQL.database
         )
-        MySQL.conn.ping(reconnect=True)
 
+    @staticmethod
+    def _ensure_connection():
+        """Ensure the connection is active or reconnect if needed."""
+        if MySQL.conn is None or not MySQL.conn.is_connected():
+            try:
+                MySQL._connect()
+            except Exception as e:
+                raise RuntimeError(f"Failed to reconnect to the database: {e}")
+
+    @staticmethod
     def commit():
+        MySQL._ensure_connection()
         MySQL.conn.commit()
-    
+
+    @staticmethod
     def cursor():
+        MySQL._ensure_connection()
         return MySQL.conn.cursor(dictionary=True)
-        
-    def fetch_one(query, args = ()):
-        MySQL.LOCK.acquire()
-        cursor = MySQL.cursor()
-        cursor.execute(query, args)
-        data = cursor.fetchone()
-        cursor.close()
-        MySQL.LOCK.release()
-        return data
 
-    def fetch_all(query, args = ()):
-        MySQL.LOCK.acquire()
-        cursor = MySQL.cursor()
-        cursor.execute(query, args)
-        data = cursor.fetchall()
-        cursor.close()
-        MySQL.LOCK.release()
-        return data
-    
+    @staticmethod
+    def fetch_one(query, args=()):
+        with MySQL.LOCK:
+            cursor = MySQL.cursor()
+            cursor.execute(query, args)
+            data = cursor.fetchone()
+            cursor.close()
+            return data
+
+    @staticmethod
+    def fetch_all(query, args=()):
+        with MySQL.LOCK:
+            cursor = MySQL.cursor()
+            cursor.execute(query, args)
+            data = cursor.fetchall()
+            cursor.close()
+            return data
+
+    @staticmethod
     def insert_into(table, columns, values):
-        MySQL.LOCK.acquire()
-        cursor = MySQL.cursor()
-        print(f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({', '.join('%s' for _ in range(len(values)))})")
-        cursor.execute(f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({', '.join('%s' for _ in range(len(values)))})", values)
-        MySQL.commit()
-        row_id = cursor.lastrowid
-        cursor.close()
-        MySQL.LOCK.release()
-        return row_id
-    
-    def update(table, columns, condition, args):
-        MySQL.LOCK.acquire()
-        cursor = MySQL.cursor()
-        print(f"UPDATE {table} SET {', '.join([f'{column} = %s' for column in columns])} WHERE {condition}")
-        cursor.execute(f"UPDATE {table} SET {', '.join([f'{column} = %s' for column in columns])} WHERE {condition}", args)
-        MySQL.commit()
-        cursor.close()
-        MySQL.LOCK.release()
+        with MySQL.LOCK:
+            cursor = MySQL.cursor()
+            cursor.execute(
+                f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({', '.join('%s' for _ in range(len(values)))})",
+                values
+            )
+            MySQL.commit()
+            row_id = cursor.lastrowid
+            cursor.close()
+            return row_id
 
+    @staticmethod
+    def update(table, columns, condition, args):
+        with MySQL.LOCK:
+            cursor = MySQL.cursor()
+            cursor.execute(
+                f"UPDATE {table} SET {', '.join([f'{column} = %s' for column in columns])} WHERE {condition}",
+                args
+            )
+            MySQL.commit()
+            cursor.close()
+
+    @staticmethod
     def delete(table, condition, args):
-        MySQL.LOCK.acquire()
-        cursor = MySQL.cursor()
-        print(f"DELETE FROM {table} WHERE {condition}")
-        cursor.execute(f"DELETE FROM {table} WHERE {condition}", args)
-        MySQL.commit()
-        cursor.close()
-        MySQL.LOCK.release()
+        with MySQL.LOCK:
+            cursor = MySQL.cursor()
+            cursor.execute(
+                f"DELETE FROM {table} WHERE {condition}",
+                args
+            )
+            MySQL.commit()
+            cursor.close()
