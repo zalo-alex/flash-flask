@@ -91,3 +91,15 @@ def endpoint():
 ### Get a site map
 
 By using `app.set_site_map("/sitemap")` you will be able to have a sitemap of all routes
+
+## Publish project
+
+```bash
+pip install build
+pip install twine
+```
+
+```bash
+python3 -m build
+python3 -m twine upload dist/*
+```
